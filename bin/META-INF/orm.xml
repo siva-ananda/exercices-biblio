@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_2_0.xsd"
+	version="2.0">
+	
+	<access>FIELD</access>
+	
+	<named-query name="getAuteurByPrenomAndNom">
+		<query>select a from AuteurImpl a where lower(a.prenom) = lower(?1) and lower(a.nom) = lower(?2)</query>
+	</named-query>
+	
+	<named-query name="getAllAuteurs">
+		<query>select a from AuteurImpl a</query>
+	</named-query>
+	
+	<named-query name="getCollectionByNom">
+		<query>select c from CollectionImpl c where lower(c.nom) = lower(?1)</query>
+	</named-query>
+	
+	<named-query name="getAllCollections">
+		<query>select c from CollectionImpl c</query>
+	</named-query>
+	
+	<named-query name="getLivreByCode">
+		<query>select l from LivreImpl l where l.code = ?1</query>
+	</named-query>
+	
+	<named-query name="getAllLivres">
+		<query>select l from LivreImpl l</query>
+	</named-query>
+	
+	
+	
+	<entity name="EmprunteurImpl" class ="be.steformations.laura.biblio.entities.EmprunteurImpl">
+		<table name="emprunteurs" />
+		<attributes>
+			<id name="id"><column name="emp_code"/><generated-value strategy="IDENTITY"/></id>
+			<basic name="nom"><column name="emp_nom"/></basic>
+			<basic name="prenom"><column name="emp_prenom"/></basic>
+			<basic name="dateDeNaissance"><column name="emp_ddn"/><temporal>DATE</temporal></basic>
+			<basic name="telephone"><column name="emp_tel"/></basic>
+			<basic name="email"><column name="emp_email"/></basic>
+			<many-to-many name="livres">
+				<join-table name="reservations">
+					<join-column name="res_emprunteur"/>
+					<inverse-join-column name="res_livre"/>
+				</join-table>
+			</many-to-many>
+		</attributes>
+	</entity>
+	
+	<entity name="ReservationImpl" class ="be.steformations.laura.biblio.entities.ReservationImpl">
+		<table name="reservations" />
+		<attributes>
+			<id name="id"><column name="res_code"/><generated-value strategy="IDENTITY"/></id>
+			<basic name="dateDeReservation"><column name="res_date"/><temporal>DATE</temporal></basic>
+			<many-to-one name="emprunteur"><join-column name="res_emprunteur"/></many-to-one>
+			<many-to-one name="livre"><join-column name="res_livre"/></many-to-one>
+		</attributes>
+	</entity>
+
+	<entity name="LivreImpl" class ="be.steformations.laura.biblio.entities.LivreImpl">
+		<table name="livres" />
+		<attributes>
+			<id name="code"><column name="liv_code"/></id>
+			<basic name="titre"><column name="liv_titre"/></basic>
+			<basic name="nombreDePages"><column name="liv_pages"/></basic>
+			<basic name="numeroEdition"><column name="liv_edition"/></basic>
+			<basic name="dateDeParution"><column name="liv_parution"/><temporal>DATE</temporal></basic>
+			<many-to-one name="collection"><join-column name="liv_collection"/></many-to-one>
+			<many-to-many name="auteurs">
+				<join-table name="livres_auteurs">
+					<join-column name="livre_id"/>
+					<inverse-join-column name="auteur_id"/>
+				</join-table>
+			</many-to-many>
+		</attributes>
+	</entity>
+
+	<entity name="CollectionImpl" class ="be.steformations.laura.biblio.entities.CollectionImpl">
+		<table name="collections" />
+		<attributes>
+			<id name="id"><column name="col_code"/><generated-value strategy="IDENTITY"/></id>
+			<basic name="nom"><column name="col_nom"/></basic>
+			<one-to-many name="livresCol" mapped-by="collection"/>
+		</attributes>
+	</entity>
+
+	<entity name="AuteurImpl" class ="be.steformations.laura.biblio.entities.AuteurImpl">
+		<table name="auteurs" />
+		<attributes>
+			<id name="id"><column name="aut_code"/><generated-value strategy="IDENTITY"/></id>
+			<basic name="nom"><column name="aut_nom"/></basic>
+			<basic name="prenom"><column name="aut_prenom"/></basic>
+		</attributes>
+	</entity>
+
+</entity-mappings>
